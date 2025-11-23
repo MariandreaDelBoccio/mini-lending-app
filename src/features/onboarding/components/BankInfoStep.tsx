@@ -1,14 +1,10 @@
 import { Input, Select } from "@/shared/components";
 import { BankInfo } from "@/shared/types/common.types";
-import { bankInfoSchema } from "@/utils/validation.schemas";
-import { useState } from "react";
 
 export const BankInfoStep: React.FC<{
   data: BankInfo;
   onChange: (data: BankInfo) => void;
 }> = ({ data, onChange }) => {
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
   const countries = [
     { value: "", label: "Select a country" },
     { value: "US", label: "United States" },
@@ -26,19 +22,6 @@ export const BankInfoStep: React.FC<{
     { value: "BR", label: "Brazil" },
   ];
 
-  const validateAll = (updatedData: BankInfo) => {
-    try {
-      bankInfoSchema.parse(updatedData);
-      setErrors({});
-    } catch (error: any) {
-      const newErrors: Record<string, string> = {};
-      error.errors.forEach((err: any) => {
-        newErrors[err.path[0]] = err.message;
-      });
-      setErrors(newErrors);
-    }
-  };
-
   const getAccountPlaceholder = () => {
     const europeanCountries = ['DE', 'FR', 'ES', 'IT', 'NL', 'BE', 'AT', 'PT', 'IE', 'GR'];
     if (europeanCountries.includes(data.country || '')) {
@@ -55,35 +38,21 @@ export const BankInfoStep: React.FC<{
       <Input
         label="Bank Name"
         value={data.bankName || ""}
-        onChange={(v) => {
-          const updated = { ...data, bankName: v };
-          onChange(updated);
-          validateAll(updated);
-        }}
-        error={errors.bankName}
+        onChange={(v) => onChange({ ...data, bankName: v })}
+        placeholder="Enter bank name"
         required
       />
       <Select
         label="Country"
         value={data.country || ""}
-        onChange={(v) => {
-          const updated = { ...data, country: v };
-          onChange(updated);
-          validateAll(updated);
-        }}
+        onChange={(v) => onChange({ ...data, country: v })}
         options={countries}
-        error={errors.country}
         required
       />
       <Input
         label="Account Number"
         value={data.accountNumber || ""}
-        onChange={(v) => {
-          const updated = { ...data, accountNumber: v };
-          onChange(updated);
-          validateAll(updated);
-        }}
-        error={errors.accountNumber}
+        onChange={(v) => onChange({ ...data, accountNumber: v })}
         placeholder={getAccountPlaceholder()}
         required
       />
@@ -91,13 +60,8 @@ export const BankInfoStep: React.FC<{
         label="Average Balance (Last 6 months)"
         type="number"
         value={data.averageBalance || ""}
-        onChange={(v) => {
-          const balance = parseFloat(v) || 0;
-          const updated = { ...data, averageBalance: balance };
-          onChange(updated);
-          validateAll(updated);
-        }}
-        error={errors.averageBalance}
+        onChange={(v) => onChange({ ...data, averageBalance: parseFloat(v) || 0 })}
+        placeholder="e.g., 50000"
         required
       />
     </div>
