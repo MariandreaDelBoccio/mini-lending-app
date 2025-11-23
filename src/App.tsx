@@ -33,20 +33,25 @@ const App: React.FC = () => {
   };
 
   if (view === "onboarding") {
-    return <OnboardingWizard onComplete={handleOnboardingComplete} />;
+    return (
+      <OnboardingWizard
+        onComplete={handleOnboardingComplete}
+        editMode={!!onboardingData.company}
+      />
+    );
   }
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
       {sidebarOpen && (
-        <div className="w-64 bg-white shadow-lg">
+        <div className="w-64 bg-white shadow-lg flex flex-col">
           <div className="p-6">
             <h2 className="text-xl font-bold text-blue-600">LendingPro</h2>
             <p className="text-xs text-gray-500 mt-1">SME Credit Platform</p>
           </div>
 
-          <nav className="px-4 space-y-2">
+          <nav className="px-4 space-y-2 flex-1">
             <button
               onClick={() => setView("dashboard")}
               className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
@@ -75,7 +80,7 @@ const App: React.FC = () => {
             </button>
           </nav>
 
-          <div className="absolute bottom-4 left-4 right-4">
+          <div className="p-4 mt-auto">
             <Card className="bg-blue-50 border-blue-200">
               <div className="text-sm">
                 <div className="font-semibold mb-1">
