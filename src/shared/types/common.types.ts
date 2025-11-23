@@ -23,6 +23,7 @@ export interface FinancialData {
 export interface BankInfo {
   bankName: string;
   accountNumber: string;
+  country: string;
   averageBalance: number;
 }
 

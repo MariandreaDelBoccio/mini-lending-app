@@ -15,7 +15,8 @@ import { SummaryStep } from "./components/SummaryStep";
 
 export const OnboardingWizard: React.FC<{
   onComplete: () => void;
-}> = ({ onComplete }) => {
+  editMode?: boolean;
+}> = ({ onComplete, editMode = false }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState<OnboardingData>({});
   const [loading, setLoading] = useState(false);
@@ -27,10 +28,14 @@ export const OnboardingWizard: React.FC<{
       const saved = await mockAPI.getOnboarding();
       if (saved && Object.keys(saved).length > 0) {
         setData(saved);
+        // If in edit mode and data exists, start at summary
+        if (editMode && saved.company) {
+          setCurrentStep(steps.length - 1);
+        }
       }
     };
     loadData();
-  }, []);
+  }, [editMode]);
 
   const saveProgress = async () => {
     await mockAPI.saveOnboarding(data);
@@ -58,14 +63,28 @@ export const OnboardingWizard: React.FC<{
     switch (currentStep) {
       case 0:
         return (
-          data.company?.name && data.company?.taxId && data.company?.industry
+          data.company?.name &&
+          data.company?.taxId &&
+          data.company?.industry &&
+          data.company?.foundedYear &&
+          data.company?.employeeCount
         );
       case 1:
-        return data.representative?.fullName && data.representative?.email;
+        return (
+          data.representative?.fullName &&
+          data.representative?.email &&
+          data.representative?.phone &&
+          data.representative?.identification
+        );
       case 2:
         return data.financials && data.financials.length > 0;
       case 3:
-        return data.bankInfo?.bankName && data.bankInfo?.averageBalance;
+        return (
+          data.bankInfo?.bankName &&
+          data.bankInfo?.accountNumber &&
+          data.bankInfo?.country &&
+          data.bankInfo?.averageBalance !== undefined
+        );
       default:
         return true;
     }
